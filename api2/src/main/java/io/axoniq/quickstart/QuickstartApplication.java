@@ -2,7 +2,6 @@ package io.axoniq.quickstart;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Main entry point for the AxonIQ Platform Quickstart application.
@@ -23,15 +22,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * <p><strong>Key Components Enabled:</strong></p>
  * <ul>
  *   <li><strong>{@code @SpringBootApplication}</strong>: Enables auto-configuration, component scanning, and configuration properties</li>
- *   <li><strong>{@code @EnableScheduling}</strong>: Activates scheduled task execution for the {@link io.axoniq.quickstart.giftcard.scheduler.GiftCardScheduler}</li>
+ *   <li><strong>Axon Query Components</strong>: Provides query bus, subscription queries, and projection wiring</li>
  * </ul>
  *
  * <p><strong>Domain Model:</strong></p>
  * <p>The application centers around a Gift Card domain implementing:</p>
  * <ul>
- *   <li><strong>Aggregate</strong>: {@link io.axoniq.quickstart.giftcard.aggregate.GiftCardAggregate} - Core business logic and state</li>
- *   <li><strong>Commands</strong>: Issue and redeem operations with business validation</li>
- *   <li><strong>Events</strong>: Immutable facts about gift card lifecycle changes</li>
+ *   <li><strong>Events</strong>: Immutable facts about gift card lifecycle changes consumed from the command service</li>
  *   <li><strong>Queries</strong>: Read operations with subscription query support</li>
  *   <li><strong>Projections</strong>: Denormalized read models for efficient querying</li>
  * </ul>
@@ -71,14 +68,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  *   <li>Ensure Axon Server is running on localhost:8124</li>
  *   <li>Run this application using Spring Boot</li>
  *   <li>Access the web interface at http://localhost:8080</li>
- *   <li>Observe real-time gift card operations via the scheduler</li>
- *   <li>Interact with the API endpoints at /api/giftcards</li>
+ *   <li>Observe real-time gift card operations streamed from events</li>
+ *   <li>Hit the read-side API endpoints at /api/giftcards</li>
  * </ol>
  *
- * @see io.axoniq.quickstart.giftcard.aggregate.GiftCardAggregate
  * @see io.axoniq.quickstart.giftcard.web.GiftCardController
  * @see io.axoniq.quickstart.giftcard.query.GiftCardProjection
- * @see io.axoniq.quickstart.giftcard.scheduler.GiftCardScheduler
  * @see <a href="https://docs.axoniq.io/reference-guide/">Axon Framework Reference Guide</a>
  *
  * @author AxonIQ Quickstart
@@ -86,7 +81,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @since 1.0
  */
 @SpringBootApplication
-@EnableScheduling
 public class QuickstartApplication {
 
     /**
@@ -97,7 +91,6 @@ public class QuickstartApplication {
      *   <li>Axon Framework auto-configuration</li>
      *   <li>Spring WebFlux reactive web server</li>
      *   <li>Component scanning and dependency injection</li>
-     *   <li>Scheduled task initialization</li>
      *   <li>Static resource serving configuration</li>
      * </ul>
      *
@@ -106,9 +99,7 @@ public class QuickstartApplication {
      *   <li>Spring Boot application context initialization</li>
      *   <li>Axon Server connection establishment</li>
      *   <li>Event store and command/query bus configuration</li>
-     *   <li>Aggregate and projection registration</li>
      *   <li>Web server startup on port 8080</li>
-     *   <li>Scheduler activation for demo operations</li>
      * </ol>
      *
      * @param args command line arguments passed to the application

@@ -5,6 +5,8 @@ import io.axoniq.quickstart.giftcard.event.GiftCardRedeemedEvent;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,9 +17,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * Event-driven projection that maintains an in-memory read model of gift card data.
  *
  * <p>This component implements the CQRS query side by maintaining a denormalized,
- * eventually consistent view of gift card states. It listens to domain events from
- * the {@link io.axoniq.quickstart.giftcard.aggregate.GiftCardAggregate} and updates
- * the read model accordingly, while also supporting real-time query subscriptions
+ * eventually consistent view of gift card states. It listens to domain events emitted by the
+ * dedicated command service and updates the read model accordingly, while also supporting
+ * real-time query subscriptions
  * through the Axon Framework's query update mechanism.</p>
  *
  * <p><strong>Architecture patterns implemented:</strong></p>
@@ -74,6 +76,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class GiftCardProjection {
 
+    private static final Logger logger = LoggerFactory.getLogger(GiftCardProjection.class);
+
     /**
      * In-memory store of gift card summaries keyed by gift card ID.
      * Uses ConcurrentHashMap for thread-safe concurrent access.
@@ -121,6 +125,8 @@ public class GiftCardProjection {
         );
         giftCards.put(event.giftCardId(), giftCard);
 
+        logger.info("Projection stored issued gift card {} amount {}", event.giftCardId(), event.amount());
+
         queryUpdateEmitter.emit(FindGiftCardQuery.class,
                 query -> query.giftCardId().equals(event.giftCardId()),
                 giftCard);
@@ -163,6 +169,8 @@ public class GiftCardProjection {
                     existingGiftCard.initialValue()
             );
             giftCards.put(event.giftCardId(), updatedGiftCard);
+
+            logger.info("Projection applied redemption {} for gift card {} (new balance {})", event.amount(), event.giftCardId(), updatedGiftCard.remainingValue());
 
             queryUpdateEmitter.emit(FindGiftCardQuery.class,
                     query -> query.giftCardId().equals(event.giftCardId()),

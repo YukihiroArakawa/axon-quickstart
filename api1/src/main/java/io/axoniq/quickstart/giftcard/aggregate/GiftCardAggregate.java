@@ -9,6 +9,8 @@ import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 
@@ -47,6 +49,8 @@ import java.math.BigDecimal;
  */
 @Aggregate
 public class GiftCardAggregate {
+
+    private static final Logger logger = LoggerFactory.getLogger(GiftCardAggregate.class);
 
     /**
      * The unique identifier for this gift card aggregate.
@@ -92,6 +96,7 @@ public class GiftCardAggregate {
         if (command.amount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Gift card amount must be positive");
         }
+        logger.info("Issuing gift card {} amount {}", command.giftCardId(), command.amount());
         AggregateLifecycle.apply(new GiftCardIssuedEvent(command.giftCardId(), command.amount()));
     }
 
@@ -123,6 +128,7 @@ public class GiftCardAggregate {
         if (command.amount().compareTo(remainingValue) > 0) {
             throw new IllegalArgumentException("Insufficient funds");
         }
+        logger.info("Redeeming {} from gift card {} (balance before redemption {})", command.amount(), command.giftCardId(), remainingValue);
         AggregateLifecycle.apply(new GiftCardRedeemedEvent(command.giftCardId(), command.amount()));
     }
 

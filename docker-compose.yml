@@ -2,9 +2,9 @@ services:
   axon-server:
     image: axoniq/axonserver:latest-jdk-17
     ports:
-      - "8024:8024"
-      - "8124:8124"
-      - '8224:8224'
+      - "8024:8024" # Axon Server HTTP console (browser UI)
+      - "8124:8124" # Axon Server gRPC port for command/event/query traffic
+      - "8224:8224" # Axon Server management/monitoring port
     hostname: axonserver-1
     environment:
       - axoniq_console_authentication=6fbd767b-0-asc:d8a70f566d8b4ae7b52c00ba139985df
