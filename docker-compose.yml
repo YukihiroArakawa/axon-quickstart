@@ -1,0 +1,24 @@
+services:
+  axon-server:
+    image: axoniq/axonserver:latest-jdk-17
+    ports:
+      - "8024:8024"
+      - "8124:8124"
+      - '8224:8224'
+    hostname: axonserver-1
+    environment:
+      - axoniq_console_authentication=6fbd767b-0-asc:d8a70f566d8b4ae7b52c00ba139985df
+    volumes:
+      - data:/axonserver/data
+      - events:/axonserver/events
+    networks:
+      - axon-server
+
+networks:
+  axon-server:
+
+volumes:
+  data:
+    driver: local
+  events:
+    driver: local
